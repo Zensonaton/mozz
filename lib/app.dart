@@ -39,6 +39,12 @@ class MainApp extends ConsumerWidget {
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           elevation: 0,
         ),
+        dividerTheme: const DividerThemeData(
+          color: Color(0xFFEDF2F6),
+          indent: 0,
+          space: 0,
+          thickness: 1,
+        ),
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
             for (final platform in TargetPlatform.values)
