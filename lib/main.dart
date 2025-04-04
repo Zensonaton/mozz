@@ -1,10 +1,12 @@
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 import "app.dart";
 import "consts.dart";
 import "dio_interceptors.dart";
+import "provider/shared_preferences.dart";
 
 /// Глобальный ключ навигации приложения.
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -25,10 +27,17 @@ final Dio dio = Dio(
     DioInterceptor(),
   );
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final prefs = await SharedPreferences.getInstance();
+
   runApp(
-    const ProviderScope(
-      child: MainApp(),
+    ProviderScope(
+      overrides: [
+        sharedPrefsProvider.overrideWithValue(prefs),
+      ],
+      child: const MainApp(),
     ),
   );
 }

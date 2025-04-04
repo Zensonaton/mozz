@@ -6,7 +6,7 @@ part of 'authorization.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authorizationHash() => r'40222314cb746a2afa4d9b80e91921188497c48d';
+String _$authorizationHash() => r'd92e5877c8de16b55ed3ea6e70447b3fab8d52e5';
 
 /// [Provider] для хранения состояния авторизации пользователя. Позволяет авторизовывать и деавторизовывать пользователя.
 ///
@@ -25,8 +25,7 @@ String _$authorizationHash() => r'40222314cb746a2afa4d9b80e91921188497c48d';
 ///
 /// Copied from [Authorization].
 @ProviderFor(Authorization)
-final authorizationProvider =
-    AutoDisposeNotifierProvider<Authorization, User?>.internal(
+final authorizationProvider = NotifierProvider<Authorization, User?>.internal(
   Authorization.new,
   name: r'authorizationProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -36,6 +35,6 @@ final authorizationProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$Authorization = AutoDisposeNotifier<User?>;
+typedef _$Authorization = Notifier<User?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

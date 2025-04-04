@@ -17,7 +17,8 @@ part "router.g.dart";
 /// Если Вам нужно изменить redirect'ы, то обратитесь к [currentAuthStateProvider].
 @riverpod
 GoRouter router(Ref ref) {
-  final authorizedNotifier = ValueNotifier(false);
+  final authorizedNotifier =
+      ValueNotifier(ref.read(authorizationProvider) != null);
   ref
     ..onDispose(authorizedNotifier.dispose)
     ..listen(authorizationProvider, (_, value) {

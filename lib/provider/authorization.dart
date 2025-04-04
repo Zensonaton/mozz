@@ -1,6 +1,7 @@
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../api/shared.dart";
+import "shared_preferences.dart";
 
 part "authorization.g.dart";
 
@@ -38,11 +39,19 @@ class User {
 /// ```
 ///
 /// Для авторизации необходимо использовать метод [login], с передачей сопутствующих параметров.
-@riverpod
+@Riverpod(keepAlive: true)
 class Authorization extends _$Authorization {
   @override
   User? build() {
-    // TODO: Загружаем данные из SharedPreferences.
+    final prefs = ref.read(sharedPrefsProvider);
+    final id = prefs.getString("ID");
+    final username = prefs.getString("Username");
+    final token = prefs.getString("Token");
+    if (id != null && username != null && token != null) {
+      state = User(id: id, username: username, token: token);
+
+      return state;
+    }
 
     return null;
   }
@@ -51,9 +60,12 @@ class Authorization extends _$Authorization {
   /// Авторизовывает пользователя, который ранее смог успешно авторизоваться по логину и паролю (API [authLogin]), либо зарегистрировался (API [authRegister]), получив access-токен.
   /// {@endtemplate}
   Future<void> login(String id, String username, String token) async {
-    state = User(id: id, username: username, token: token);
+    final prefs = ref.read(sharedPrefsProvider);
+    await prefs.setString("ID", id);
+    await prefs.setString("Username", username);
+    await prefs.setString("Token", token);
 
-    // TODO: Сохраняем данные в SharedPreferences.
+    state = User(id: id, username: username, token: token);
   }
 
   /// Аналог метода [login], но принимает в качестве параметра [SuccessLoginResponse] - ответ от API, который содержит в себе данные для авторизации.
@@ -69,8 +81,9 @@ class Authorization extends _$Authorization {
 
   /// Деавторизовывает пользователя.
   Future<void> logout() async {
-    state = null;
+    final prefs = ref.read(sharedPrefsProvider);
+    await prefs.clear();
 
-    // TODO: Очищаем данные SharedPreferences.
+    state = null;
   }
 }
