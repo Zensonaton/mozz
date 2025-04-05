@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:skeletonizer/skeletonizer.dart";
+
+import "../fake_data.dart";
 
 /// Виджет для [ChatDialog], отображающий правый блок диалога с информацией о времени отправки последнего сообщения.
 class ChatDialogLastMessageInfo extends StatelessWidget {
@@ -142,6 +145,7 @@ class ChatAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final isSkeletonizer = Skeletonizer.of(context).enabled;
     final firstChar =
         username?.isNotEmpty == true ? username![0].toUpperCase() : null;
 
@@ -155,12 +159,14 @@ class ChatAvatar extends StatelessWidget {
         ),
         child: firstChar != null
             ? Center(
-                child: Text(
-                  firstChar,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                child: Skeleton.ignore(
+                  child: Text(
+                    firstChar,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               )
@@ -215,6 +221,18 @@ class ChatDialog extends StatelessWidget {
     this.sentTimeText,
     this.onTap,
   });
+
+  /// Создает экземпляр [ChatDialog] с фейковыми параметрами на основе переданного [index].
+  ///
+  /// Используется для skeleton loader'ов.
+  static ChatDialog fake({int index = 0, bool minimized = false}) {
+    return ChatDialog(
+      index: index,
+      username: fakeUsernames[index % fakeUsernames.length],
+      lastMessage: fakeMessages[index % fakeMessages.length],
+      sentTimeText: minimized ? null : fakeTime[index % fakeTime.length],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

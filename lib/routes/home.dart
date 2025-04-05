@@ -3,6 +3,7 @@ import "dart:ui";
 import "package:flutter/material.dart";
 import "package:gap/gap.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
+import "package:skeletonizer/skeletonizer.dart";
 
 import "../widgets/chat_dialog.dart";
 import "../widgets/svg_icon.dart";
@@ -142,17 +143,11 @@ class HomeRoute extends ConsumerWidget {
             SliverList.separated(
               itemCount: 100,
               itemBuilder: (BuildContext context, int index) {
-                final isEven = index % 2 == 0;
-
-                return ChatDialog(
-                  index: index,
-                  username: isEven ? "Виктор" : "Саша",
-                  lastMessage: isEven ? "Уже сделал?" : "Я готов",
-                  isSenderCurrent: isEven,
-                  sentTimeText: useMinimizedLayout
-                      ? null
-                      : (isEven ? "Вчера" : "2 минуты назад"),
-                  onTap: () {},
+                return Skeletonizer(
+                  child: ChatDialog.fake(
+                    index: index,
+                    minimized: useMinimizedLayout,
+                  ),
                 );
               },
               separatorBuilder: (BuildContext context, int index) {
