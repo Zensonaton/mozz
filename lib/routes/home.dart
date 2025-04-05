@@ -108,34 +108,39 @@ class HomeRoute extends ConsumerWidget {
               delegate: _SliverHeaderDelegate(),
             ),
             SliverFillRemaining(
-              child: Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFF2B333E),
+              child: Padding(
+                padding: const EdgeInsets.all(
+                  20,
+                ),
+                child: Center(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: const TextSpan(
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color(0xFF2B333E),
+                      ),
+                      children: [
+                        TextSpan(
+                          text: "Добро пожаловать в Мессенджер!\n\n",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "Введите ",
+                        ),
+                        TextSpan(
+                          text: "@ИмяПользователя ",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "в поиске, чтобы начать общение.",
+                        ),
+                      ],
                     ),
-                    children: [
-                      TextSpan(
-                        text: "Добро пожаловать в Мессенджер!\n\n",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "Введите ",
-                      ),
-                      TextSpan(
-                        text: "@ИмяПользователя ",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "в поиске, чтобы начать общение.",
-                      ),
-                    ],
                   ),
                 ),
               ),
