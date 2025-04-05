@@ -67,6 +67,7 @@ class AuthRoute extends HookWidget {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w600,
+                    color: Color(0xFF2B333E),
                   ),
                 ),
                 const Gap(4),

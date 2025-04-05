@@ -70,9 +70,10 @@ class AuthRegisterRoute extends HookConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                   text: TextSpan(
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 32,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2B333E),
                     ),
                     children: [
                       const TextSpan(

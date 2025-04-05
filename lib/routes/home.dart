@@ -41,6 +41,7 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w600,
+                        color: Color(0xFF2B333E),
                       ),
                     ),
                     const Gap(4),
@@ -104,6 +105,39 @@ class HomeRoute extends ConsumerWidget {
             SliverPersistentHeader(
               floating: true,
               delegate: _SliverHeaderDelegate(),
+            ),
+            SliverFillRemaining(
+              child: Center(
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Color(0xFF2B333E),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Добро пожаловать в Мессенджер!\n\n",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "Введите ",
+                      ),
+                      TextSpan(
+                        text: "@ИмяПользователя ",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "в поиске, чтобы начать общение.",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
             SliverList.separated(
               itemCount: 100,
