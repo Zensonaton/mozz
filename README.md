@@ -9,7 +9,7 @@
 
 ## Содержание репозитория
 
-**Приложение**: Flutter (Dart), Riverpod, Dio, go_router.
+**Приложение**: Flutter (Dart), Riverpod, flutter_hooks, Dio, go_router.
 
 **Backend**: FastAPI (Python), asyncio, CouchDB.
 
