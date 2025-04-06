@@ -7,6 +7,7 @@ import "../main.dart";
 import "../routes/auth.dart";
 import "../routes/auth/login.dart";
 import "../routes/auth/register.dart";
+import "../routes/chat.dart";
 import "../routes/home.dart";
 import "authorization.dart";
 
@@ -65,6 +66,12 @@ GoRouter router(Ref ref) {
       GoRoute(
         path: HomeRoute.routePath,
         builder: (_, __) => const HomeRoute(),
+      ),
+      GoRoute(
+        path: ChatRoute.routePath,
+        builder: (_, state) => ChatRoute(
+          username: state.pathParameters["username"]!,
+        ),
       ),
     ],
   );

@@ -9,10 +9,14 @@ class SvgIcon extends StatelessWidget {
   /// Цвет иконки.
   final Color? color;
 
+  /// Размер иконки.
+  final double size;
+
   const SvgIcon({
     super.key,
     required this.name,
     this.color,
+    this.size = 24,
   });
 
   /// Возвращает полный путь к файлу иконки по переданному [name] иконки (без расширения).
@@ -22,6 +26,8 @@ class SvgIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       getPath(name),
+      width: size,
+      height: size,
       colorFilter: color != null
           ? ColorFilter.mode(
               color!,

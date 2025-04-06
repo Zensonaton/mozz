@@ -114,13 +114,9 @@ class AuthLoginRoute extends HookConsumerWidget {
                     ),
                     child: IconButton(
                       onPressed: onHideTap,
-                      icon: SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: SvgIcon(
-                          name: hidden.value ? "view" : "not_view",
-                          color: const Color(0xFF9DB7CB),
-                        ),
+                      icon: SvgIcon(
+                        name: hidden.value ? "view" : "not_view",
+                        color: const Color(0xFF9DB7CB),
                       ),
                     ),
                   ),

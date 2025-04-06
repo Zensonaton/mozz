@@ -4,6 +4,7 @@ import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:gap/gap.dart";
+import "package:go_router/go_router.dart";
 import "package:skeletonizer/skeletonizer.dart";
 
 import "../api/shared.dart";
@@ -165,6 +166,10 @@ class ChatList extends HookWidget {
     final debouncedText =
         useDebounced(controller.text.trim(), DialogsView.searchDelay);
 
+    void onChatTap(String username) {
+      context.push("/chat/$username");
+    }
+
     Future<void> search(String query) async {
       if (query.isEmpty) return;
 
@@ -238,7 +243,11 @@ class ChatList extends HookWidget {
             return ChatDialog(
               index: index,
               username: user.username,
-              onTap: () {}, // TODO
+              onTap: () {
+                onChatTap(
+                  user.username,
+                );
+              }, // TODO: Не открывать, если это текущий пользователь
             );
           }
         }
