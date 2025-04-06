@@ -173,7 +173,7 @@ class ChatList extends HookConsumerWidget {
     final foundUser = useState<APIUserResponse?>(null);
 
     useValueListenable(controller);
-    final debouncedText = useDebounced(controller.text.trim(), searchDelay);
+    final debouncedText = useDebounced(controller.text, searchDelay);
 
     void onChatTap(String username) {
       context.push("/chat/$username");
