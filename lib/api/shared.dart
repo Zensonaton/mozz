@@ -27,6 +27,34 @@ class SuccessLoginResponse {
   Map<String, dynamic> toJson() => _$SuccessLoginResponseToJson(this);
 }
 
+/// Ответ для API-методов, возвращающий информацию о пользователе.
+@JsonSerializable()
+class APIUserResponse {
+  /// Уникальный UUID пользователя.
+  final String id;
+
+  /// Имя пользователя.
+  final String username;
+
+  /// Указывает, есть ли у этого пользователя аватарка.
+  final bool hasAvatar;
+
+  /// Если [hasAvatar] правдив, то возвращает URL аватарки пользователя.
+  final String? avatarUrl;
+
+  const APIUserResponse({
+    required this.id,
+    required this.username,
+    required this.hasAvatar,
+    this.avatarUrl,
+  });
+
+  factory APIUserResponse.fromJson(Map<String, dynamic> json) =>
+      _$APIUserResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$APIUserResponseToJson(this);
+}
+
 /// Класс, расширяющий [DioException], олицетворяющий ошибку API.
 class APIException extends DioException {
   /// HTTP-код ошибки.

@@ -1,14 +1,21 @@
 import "package:dio/dio.dart";
+import "package:hooks_riverpod/hooks_riverpod.dart";
 
 import "api/shared.dart";
+import "provider/authorization.dart";
 
 /// [Interceptor] для [Dio], обрабатывающий ответы от API.
 class DioInterceptor extends Interceptor {
-  DioInterceptor();
+  final Ref ref;
+
+  DioInterceptor(this.ref);
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // TODO: Добавляем access token.
+    final token = ref.read(authorizationProvider)?.token;
+    if (token != null) {
+      options.headers["Token"] = token;
+    }
 
     super.onRequest(options, handler);
   }

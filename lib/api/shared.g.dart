@@ -21,3 +21,19 @@ Map<String, dynamic> _$SuccessLoginResponseToJson(
       'username': instance.username,
       'token': instance.token,
     };
+
+APIUserResponse _$APIUserResponseFromJson(Map<String, dynamic> json) =>
+    APIUserResponse(
+      id: json['id'] as String,
+      username: json['username'] as String,
+      hasAvatar: json['hasAvatar'] as bool,
+      avatarUrl: json['avatarUrl'] as String?,
+    );
+
+Map<String, dynamic> _$APIUserResponseToJson(APIUserResponse instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'username': instance.username,
+      'hasAvatar': instance.hasAvatar,
+      'avatarUrl': instance.avatarUrl,
+    };
