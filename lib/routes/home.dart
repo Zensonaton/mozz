@@ -10,7 +10,9 @@ import "package:skeletonizer/skeletonizer.dart";
 
 import "../api/shared.dart";
 import "../api/users/get.dart";
+import "../provider/authorization.dart";
 import "../provider/chats.dart";
+import "../utils.dart";
 import "../widgets/chat_dialog.dart";
 import "../widgets/svg_icon.dart";
 
@@ -163,6 +165,7 @@ class ChatList extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ownerID = ref.read(authorizationProvider)!.id;
     final chats = ref.watch(chatsProvider);
 
     final isLoading = useState(false);
@@ -253,23 +256,35 @@ class ChatList extends HookConsumerWidget {
           // Пользователь найден, отображаем его.
           final user = foundUser.value;
           if (user != null) {
+            final isSameUser = user.id == ownerID;
+
             return ChatDialog(
               index: index,
               username: user.username,
-              onTap: () {
-                onChatTap(
-                  user.username,
-                );
-              }, // TODO: Не открывать, если это текущий пользователь
+              onTap: isSameUser ? null : () => onChatTap(user.username),
             );
           }
         }
 
         if (hasSearchItem) index--;
 
-        return ChatDialog.fake(
+        final chat = chats[index];
+
+        // В моём API, в любом чате находится два пользователя: владелец аккаунта и собеседник.
+        // Поэтому, .first - владелец аккаунта (т.е., это мы), а .last - собеседник.
+        final user = chat.users.last;
+
+        // "Последнее" сообщение находится в начале списка.
+        final lastMessage = chat.messages.first;
+
+        return ChatDialog(
           index: index,
-          minimized: useMinimizedLayout,
+          username: user.username,
+          lastMessage: lastMessage.text,
+          isSenderCurrent: lastMessage.senderID == ownerID,
+          sentTimeText:
+              useMinimizedLayout ? null : formatDateTime(DateTime.now()),
+          onTap: () => onChatTap(user.username),
         );
       },
       separatorBuilder: (BuildContext context, int index) {

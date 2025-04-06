@@ -39,7 +39,7 @@ Map<String, dynamic> _$APIUserResponseToJson(APIUserResponse instance) =>
     };
 
 APIMessage _$APIMessageFromJson(Map<String, dynamic> json) => APIMessage(
-      id: json['id'] as String,
+      id: (json['id'] as num).toInt(),
       senderID: json['sender-id'] as String,
       text: json['text'] as String,
       sendTime: (json['send-time'] as num).toInt(),

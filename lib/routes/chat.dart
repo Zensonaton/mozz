@@ -2,8 +2,10 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:gap/gap.dart";
 import "package:go_router/go_router.dart";
+import "package:hooks_riverpod/hooks_riverpod.dart";
 
 import "../api/messages/send.dart";
+import "../provider/chats.dart";
 import "../widgets/chat_avatar.dart";
 import "../widgets/icon_button.dart";
 import "../widgets/svg_icon.dart";
@@ -91,20 +93,94 @@ class _ChatAppBarDelegate extends SliverPersistentHeaderDelegate {
 }
 
 /// Виджет для [ChatRoute], отображающий список сообщений.
-class ChatMessages extends StatelessWidget {
+class ChatMessages extends ConsumerWidget {
+  /// Username пользователя, с которым открыт чат.
+  final String username;
+
   const ChatMessages({
     super.key,
+    required this.username,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) => ListTile(
-          title: Text("Message $index"),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chat = ref.watch(chatProvider(username));
+    if (chat == null) {
+      return const SliverFillRemaining(
+        hasScrollBody: false,
+        child: Padding(
+          padding: EdgeInsets.all(
+            20,
+          ),
+          child: Center(
+            child: Text(
+              "Тут тихо.\n\nНе боись, скажи «привет»!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF2B333E),
+              ),
+            ),
+          ),
         ),
-        childCount: 100,
+      );
+    }
+
+    final count = chat.messages.length;
+
+    return SliverList.separated(
+      itemCount: count,
+      separatorBuilder: (BuildContext context, int index) => const Divider(
+        height: 0,
+        thickness: 1,
+        color: Color(0xFFEDF2F6),
       ),
+      itemBuilder: (BuildContext context, int index) {
+        final invertedIndex = count - index - 1;
+        final message = chat.messages[invertedIndex];
+
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 14,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ChatAvatar(
+                index: index,
+                username: username,
+              ),
+              const Gap(12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      username,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const Gap(4),
+                    Text(
+                      message.text,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF2B333E),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -126,14 +202,10 @@ class ChatInput extends HookWidget {
     void onAttachTap() {}
 
     void onSendTap() async {
+      final text = controller.text.trim();
       controller.clear();
 
-      final response = await messagesSend(
-        username,
-        controller.text,
-      );
-
-      print(response.id);
+      await messagesSend(username, text);
     }
 
     return Container(
@@ -211,7 +283,9 @@ class ChatRoute extends StatelessWidget {
                       username: username,
                     ),
                   ),
-                  const ChatMessages(),
+                  ChatMessages(
+                    username: username,
+                  ),
                 ],
               ),
             ),

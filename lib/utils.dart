@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:relative_time/relative_time.dart";
 
 import "api/shared.dart";
 import "consts.dart";
@@ -40,3 +41,8 @@ Future<void> showAPIExceptionDialog(
 
 /// Возвращает true, если [username] является валидным именем пользователя.
 bool isValidUsername(String username) => usernameRegex.hasMatch(username);
+
+/// Возвращает строку, репрезентирующую количество времени в виде "5 минут назад", "12.02.22".
+String formatDateTime(DateTime dateTime) {
+  return RelativeTime.locale(const Locale("ru")).format(dateTime);
+}

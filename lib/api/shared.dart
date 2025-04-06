@@ -59,7 +59,7 @@ class APIUserResponse {
 @JsonSerializable()
 class APIMessage {
   /// ID сообщения.
-  final String id;
+  final int id;
 
   /// ID пользователя, отправившего это сообщение.
   @JsonKey(name: "sender-id")
