@@ -5,10 +5,12 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:gap/gap.dart";
 import "package:go_router/go_router.dart";
+import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:skeletonizer/skeletonizer.dart";
 
 import "../api/shared.dart";
 import "../api/users/get.dart";
+import "../provider/chats.dart";
 import "../widgets/chat_dialog.dart";
 import "../widgets/svg_icon.dart";
 
@@ -147,7 +149,10 @@ class NoChats extends StatelessWidget {
 }
 
 /// Виджет для [DialogsView], отображающий список чатов пользователя.
-class ChatList extends HookWidget {
+class ChatList extends HookConsumerWidget {
+  /// [Duration], после которого будет выполнен поиск чатов.
+  static const Duration searchDelay = Duration(milliseconds: 800);
+
   /// [TextEditingController], используемый для поиска чатов.
   final TextEditingController controller;
 
@@ -157,14 +162,15 @@ class ChatList extends HookWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chats = ref.watch(chatsProvider);
+
     final isLoading = useState(false);
     final cancelToken = useRef<CancelToken?>(null);
     final foundUser = useState<APIUserResponse?>(null);
 
     useValueListenable(controller);
-    final debouncedText =
-        useDebounced(controller.text.trim(), DialogsView.searchDelay);
+    final debouncedText = useDebounced(controller.text.trim(), searchDelay);
 
     void onChatTap(String username) {
       context.push("/chat/$username");
@@ -221,11 +227,18 @@ class ChatList extends HookWidget {
       [debouncedText],
     );
 
-    final width = MediaQuery.sizeOf(context).width;
-    final useMinimizedLayout = width < 250;
+    final useMinimizedLayout = MediaQuery.sizeOf(context).width < 250;
+
+    final hasSearchItem = isLoading.value || foundUser.value != null;
+    final chatItemsCount = chats.length + (hasSearchItem ? 1 : 0);
+
+    // Если ничего нету, то отображаем сообщение о том, что чатов нет.
+    if (chatItemsCount == 0) {
+      return const NoChats();
+    }
 
     return SliverList.separated(
-      itemCount: 100 + ((isLoading.value || foundUser.value != null) ? 1 : 0),
+      itemCount: chatItemsCount,
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
           // Производится поиск, отображаем skeleton loader.
@@ -252,6 +265,8 @@ class ChatList extends HookWidget {
           }
         }
 
+        if (hasSearchItem) index--;
+
         return ChatDialog.fake(
           index: index,
           minimized: useMinimizedLayout,
@@ -263,32 +278,6 @@ class ChatList extends HookWidget {
           endIndent: 20,
         );
       },
-    );
-  }
-}
-
-/// Виджет для [HomeRoute], отображающий список чатов, который может меняться (из-за поиска, либо появления новых чатов), либо отображающий сообщение о том, что чатов нет.
-class DialogsView extends HookWidget {
-  /// [Duration], после которого будет выполнен поиск чатов.
-  static const Duration searchDelay = Duration(milliseconds: 800);
-
-  /// [TextEditingController], используемый для поиска чатов.
-  final TextEditingController controller;
-
-  const DialogsView({
-    super.key,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    useValueListenable(controller);
-    if (controller.text.isEmpty) {
-      return const NoChats();
-    }
-
-    return ChatList(
-      controller: controller,
     );
   }
 }
@@ -317,7 +306,7 @@ class HomeRoute extends HookWidget {
                 controller: controller,
               ),
             ),
-            DialogsView(
+            ChatList(
               controller: controller,
             ),
           ],

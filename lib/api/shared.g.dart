@@ -37,3 +37,38 @@ Map<String, dynamic> _$APIUserResponseToJson(APIUserResponse instance) =>
       'hasAvatar': instance.hasAvatar,
       'avatarUrl': instance.avatarUrl,
     };
+
+APIMessage _$APIMessageFromJson(Map<String, dynamic> json) => APIMessage(
+      id: json['id'] as String,
+      senderID: json['sender-id'] as String,
+      text: json['text'] as String,
+      sendTime: (json['send-time'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$APIMessageToJson(APIMessage instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'sender-id': instance.senderID,
+      'text': instance.text,
+      'send-time': instance.sendTime,
+    };
+
+APIChatResponse _$APIChatResponseFromJson(Map<String, dynamic> json) =>
+    APIChatResponse(
+      id: json['id'] as String,
+      users: (json['users'] as List<dynamic>)
+          .map((e) => APIUserResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      messages: (json['messages'] as List<dynamic>)
+          .map((e) => APIMessage.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      creationTime: (json['creation-time'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$APIChatResponseToJson(APIChatResponse instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'users': instance.users,
+      'messages': instance.messages,
+      'creation-time': instance.creationTime,
+    };
