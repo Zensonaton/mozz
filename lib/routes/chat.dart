@@ -166,7 +166,7 @@ class ChatInput extends StatelessWidget {
 
 /// Route, отображающий отдельный чат с пользователем.
 ///
-/// go_route: `/chat/:chatID` ([routePath]).
+/// go_route: `/chat/:username` ([routePath]).
 class ChatRoute extends StatelessWidget {
   static const String routePath = "/chat/:username";
 
