@@ -1,7 +1,9 @@
 import "package:flutter/material.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 import "package:gap/gap.dart";
 import "package:go_router/go_router.dart";
 
+import "../api/messages/send.dart";
 import "../widgets/chat_avatar.dart";
 import "../widgets/icon_button.dart";
 import "../widgets/svg_icon.dart";
@@ -108,17 +110,32 @@ class ChatMessages extends StatelessWidget {
 }
 
 /// Виджет для [ChatRoute], отображающий поле для ввода текста сообщения.
-class ChatInput extends StatelessWidget {
+class ChatInput extends HookWidget {
+  /// Username пользователя, с которым открыт чат.
+  final String username;
+
   const ChatInput({
     super.key,
+    required this.username,
   });
-
-  void onAttachTap() {}
-
-  void onSendTap() {}
 
   @override
   Widget build(BuildContext context) {
+    final controller = useTextEditingController();
+
+    void onAttachTap() {}
+
+    void onSendTap() async {
+      controller.clear();
+
+      final response = await messagesSend(
+        username,
+        controller.text,
+      );
+
+      print(response.id);
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 20,
@@ -142,9 +159,10 @@ class ChatInput extends StatelessWidget {
             ),
             onPressed: onAttachTap,
           ),
-          const Expanded(
+          Expanded(
             child: TextField(
-              decoration: InputDecoration(
+              controller: controller,
+              decoration: const InputDecoration(
                 hintText: "Сообщение",
               ),
               minLines: 1,
@@ -197,7 +215,9 @@ class ChatRoute extends StatelessWidget {
                 ],
               ),
             ),
-            const ChatInput(),
+            ChatInput(
+              username: username,
+            ),
           ],
         ),
       ),
