@@ -43,6 +43,19 @@ Future<void> showAPIExceptionDialog(
 bool isValidUsername(String username) => usernameRegex.hasMatch(username);
 
 /// Возвращает строку, репрезентирующую количество времени в виде "5 минут назад", "12.02.22".
-String formatDateTime(DateTime dateTime) {
+String formatRelativeDateTime(DateTime dateTime) {
   return RelativeTime.locale(const Locale("ru")).format(dateTime);
 }
+
+/// Возвращает строку, отображающую время в формате "HH:mm".
+String formatTime(DateTime dateTime) {
+  return "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, "0")}";
+}
+
+/// Конвертирует переданный [timestamp] (в виде Unix timestamp) в [DateTime].
+DateTime dateTimefromUnix(int timestamp) =>
+    DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+
+/// Конвертирует переданный [DateTime] в Unix timestamp (в виде int).
+int dateTimeToUnix(DateTime dateTime) =>
+    (dateTime.millisecondsSinceEpoch / 1000).round();

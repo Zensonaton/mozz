@@ -5,9 +5,11 @@ import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 
 import "../api/messages/send.dart";
+import "../provider/authorization.dart";
 import "../provider/chats.dart";
 import "../widgets/chat_avatar.dart";
 import "../widgets/icon_button.dart";
+import "../widgets/message_bubble.dart";
 import "../widgets/svg_icon.dart";
 
 /// [SliverPersistentHeaderDelegate], используемый для создания шапки [SliverPersistentHeader] в [ChatRoute].
@@ -127,57 +129,30 @@ class ChatMessages extends ConsumerWidget {
       );
     }
 
+    final auth = ref.read(authorizationProvider)!;
+
     final count = chat.messages.length;
 
     return SliverList.separated(
       itemCount: count,
-      separatorBuilder: (BuildContext context, int index) => const Divider(
-        height: 0,
-        thickness: 1,
-        color: Color(0xFFEDF2F6),
-      ),
+      separatorBuilder: (BuildContext context, int index) {
+        return const Gap(12);
+      },
       itemBuilder: (BuildContext context, int index) {
         final invertedIndex = count - index - 1;
         final message = chat.messages[invertedIndex];
+        final isSenderCurrent = message.senderID == auth.id;
 
-        return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 14,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ChatAvatar(
-                index: index,
-                username: username,
-              ),
-              const Gap(12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      username,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const Gap(4),
-                    Text(
-                      message.text,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF2B333E),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        return Align(
+          alignment:
+              isSenderCurrent ? Alignment.centerRight : Alignment.centerLeft,
+          child: MessageBubble(
+            text: message.text,
+            isSenderCurrent: isSenderCurrent,
+            bubbleType: BubbleType.values[index % BubbleType.values.length],
+            isLastInGroup: (index + 1) % 3 == 0,
+            isRead: isSenderCurrent ? true : null,
+            sentTime: message.sendTime,
           ),
         );
       },
@@ -283,8 +258,14 @@ class ChatRoute extends StatelessWidget {
                       username: username,
                     ),
                   ),
-                  ChatMessages(
-                    username: username,
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 20,
+                    ),
+                    sliver: ChatMessages(
+                      username: username,
+                    ),
                   ),
                 ],
               ),

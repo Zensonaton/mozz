@@ -42,7 +42,7 @@ APIMessage _$APIMessageFromJson(Map<String, dynamic> json) => APIMessage(
       id: (json['id'] as num).toInt(),
       senderID: json['sender-id'] as String,
       text: json['text'] as String,
-      sendTime: (json['send-time'] as num).toInt(),
+      sendTime: dateTimefromUnix((json['send-time'] as num).toInt()),
     );
 
 Map<String, dynamic> _$APIMessageToJson(APIMessage instance) =>
@@ -50,7 +50,7 @@ Map<String, dynamic> _$APIMessageToJson(APIMessage instance) =>
       'id': instance.id,
       'sender-id': instance.senderID,
       'text': instance.text,
-      'send-time': instance.sendTime,
+      'send-time': dateTimeToUnix(instance.sendTime),
     };
 
 APIChatResponse _$APIChatResponseFromJson(Map<String, dynamic> json) =>

@@ -168,6 +168,8 @@ class ChatList extends HookConsumerWidget {
     final ownerID = ref.read(authorizationProvider)!.id;
     final chats = ref.watch(chatsProvider);
 
+    // TODO: Обновлять этот виджет каждую минуту, чтобы обновить время последнего сообщения.
+
     final isLoading = useState(false);
     final cancelToken = useRef<CancelToken?>(null);
     final foundUser = useState<APIUserResponse?>(null);
@@ -282,8 +284,9 @@ class ChatList extends HookConsumerWidget {
           username: user.username,
           lastMessage: lastMessage.text,
           isSenderCurrent: lastMessage.senderID == ownerID,
-          sentTimeText:
-              useMinimizedLayout ? null : formatDateTime(DateTime.now()),
+          sentTimeText: useMinimizedLayout
+              ? null
+              : formatRelativeDateTime(lastMessage.sendTime),
           onTap: () => onChatTap(user.username),
         );
       },

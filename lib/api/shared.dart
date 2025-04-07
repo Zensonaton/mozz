@@ -1,6 +1,8 @@
 import "package:dio/dio.dart";
 import "package:json_annotation/json_annotation.dart";
 
+import "../utils.dart";
+
 part "shared.g.dart";
 
 /// Ответ для API-методов [authLogin] либо [authRegister], возвращающийся при успешной авторизации или регистрации пользователя.
@@ -68,9 +70,13 @@ class APIMessage {
   /// Текст сообщения.
   final String text;
 
-  /// Время отправки сообщения в Unix timestamp.
-  @JsonKey(name: "send-time")
-  final int sendTime;
+  /// Время отправки сообщения в формате [DateTime].
+  @JsonKey(
+    name: "send-time",
+    fromJson: dateTimefromUnix,
+    toJson: dateTimeToUnix,
+  )
+  final DateTime sendTime;
 
   APIMessage({
     required this.id,
