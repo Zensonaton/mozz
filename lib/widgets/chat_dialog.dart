@@ -46,6 +46,8 @@ class ChatDialogInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sanitizedMessage = lastMessage?.replaceAll("\n", " ");
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -61,6 +63,7 @@ class ChatDialogInfo extends StatelessWidget {
         ),
         if (lastMessage != null)
           RichText(
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               style: const TextStyle(
@@ -76,7 +79,7 @@ class ChatDialogInfo extends StatelessWidget {
                     ),
                   ),
                 TextSpan(
-                  text: lastMessage!,
+                  text: sanitizedMessage!,
                   style: const TextStyle(
                     color: Color(0xFF5E7A90),
                   ),
