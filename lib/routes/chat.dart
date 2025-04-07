@@ -180,6 +180,8 @@ class ChatInput extends HookWidget {
       final text = controller.text.trim();
       controller.clear();
 
+      if (text.isEmpty) return;
+
       await messagesSend(username, text);
     }
 
