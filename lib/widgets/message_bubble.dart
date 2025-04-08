@@ -10,19 +10,23 @@ import "svg_icon.dart";
 /// - [top] - пузырь вверху.
 /// - [connected] - пузырь соединён с другими пузырями.
 /// - [bottom] - пузырь внизу.
+/// - [single] - пузырь ни с кем не соединён, и не является единственным.
 ///
 /// Пытаясь отобразить, это выглядит так:
-/// - [connected].
+/// - [single].
 /// - [top], [connected], ..., [connected], [bottom].
 enum BubbleType {
   /// Пузырь вверху.
   top,
 
-  /// Пузырь соединён с другими пузырями, либо является единственным.
+  /// Пузырь соединён с другими пузырями.
   connected,
 
   /// Пузырь внизу.
   bottom,
+
+  /// Пузырь ни с кем не соединён, и не является единственным.
+  single,
 }
 
 /// [CustomPainter] для [MessageBubble].
@@ -52,6 +56,7 @@ class MessageBubblePainter extends CustomPainter {
   static Radius getTopRadius(BubbleType type) {
     switch (type) {
       case BubbleType.top:
+      case BubbleType.single:
         return cornerRadius;
       case BubbleType.connected:
       case BubbleType.bottom:
@@ -66,6 +71,7 @@ class MessageBubblePainter extends CustomPainter {
       case BubbleType.connected:
         return connectedRadius;
       case BubbleType.bottom:
+      case BubbleType.single:
         return cornerRadius;
     }
   }

@@ -5,12 +5,32 @@ import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 
 import "../api/messages/send.dart";
+import "../api/shared.dart";
 import "../provider/authorization.dart";
 import "../provider/chats.dart";
 import "../widgets/chat_avatar.dart";
 import "../widgets/icon_button.dart";
 import "../widgets/message_bubble.dart";
 import "../widgets/svg_icon.dart";
+
+/// Изменённая версия класса [APIMessage], которая используется для отображения сообщений в чате.
+class _Message {
+  final String text;
+  final bool isSenderCurrent;
+  BubbleType bubbleType;
+  bool isLastInGroup;
+  final bool? isRead;
+  final DateTime sentTime;
+
+  _Message({
+    required this.text,
+    required this.isSenderCurrent,
+    required this.bubbleType,
+    required this.isLastInGroup,
+    required this.isRead,
+    required this.sentTime,
+  });
+}
 
 /// [SliverPersistentHeaderDelegate], используемый для создания шапки [SliverPersistentHeader] в [ChatRoute].
 class _ChatAppBarDelegate extends SliverPersistentHeaderDelegate {
@@ -95,7 +115,7 @@ class _ChatAppBarDelegate extends SliverPersistentHeaderDelegate {
 }
 
 /// Виджет для [ChatRoute], отображающий список сообщений.
-class ChatMessages extends ConsumerWidget {
+class ChatMessages extends HookConsumerWidget {
   /// Username пользователя, с которым открыт чат.
   final String username;
 
@@ -103,6 +123,48 @@ class ChatMessages extends ConsumerWidget {
     super.key,
     required this.username,
   });
+
+  /// Преобразовывает список из [APIMessage] в список [_Message].
+  List<_Message> _parseMessages(List<APIMessage> messages, String ownerID) {
+    final List<_Message> parsed = [];
+
+    // Не забываем, что API возвращает сообщения в обратном порядке.
+    // Поэтому мы проходимся по ним с конца, чтобы отобразить их в правильном порядке.
+
+    bool inGroupStart = true;
+
+    for (int i = messages.length - 1; i >= 0; i--) {
+      final msg = messages[i];
+      final nextMsg = i == 0 ? null : messages.elementAtOrNull(i - 1);
+
+      final isCurrent = msg.senderID == ownerID;
+      final isLastInGroup = nextMsg?.senderID != msg.senderID;
+      BubbleType? bubbleType;
+      bubbleType = BubbleType.connected;
+
+      if (inGroupStart) {
+        inGroupStart = false;
+        bubbleType = isLastInGroup ? BubbleType.single : BubbleType.top;
+      } else if (isLastInGroup) {
+        inGroupStart = true;
+        bubbleType = BubbleType.bottom;
+      }
+
+      parsed.insert(
+        0,
+        _Message(
+          text: msg.text,
+          isSenderCurrent: isCurrent,
+          bubbleType: bubbleType,
+          isLastInGroup: isLastInGroup,
+          isRead: isCurrent ? true : null,
+          sentTime: msg.sendTime,
+        ),
+      );
+    }
+
+    return parsed;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -131,7 +193,12 @@ class ChatMessages extends ConsumerWidget {
 
     final auth = ref.read(authorizationProvider)!;
 
-    final count = chat.messages.length;
+    final parsedMessages = useMemoized(
+      () => _parseMessages(chat.messages, auth.id),
+      [chat.messages],
+    );
+
+    final count = parsedMessages.length;
 
     return SliverList.separated(
       itemCount: count,
@@ -140,19 +207,19 @@ class ChatMessages extends ConsumerWidget {
       },
       itemBuilder: (BuildContext context, int index) {
         final invertedIndex = count - index - 1;
-        final message = chat.messages[invertedIndex];
-        final isSenderCurrent = message.senderID == auth.id;
+        final message = parsedMessages[invertedIndex];
 
         return Align(
-          alignment:
-              isSenderCurrent ? Alignment.centerRight : Alignment.centerLeft,
+          alignment: message.isSenderCurrent
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
           child: MessageBubble(
             text: message.text,
-            isSenderCurrent: isSenderCurrent,
-            bubbleType: BubbleType.values[index % BubbleType.values.length],
-            isLastInGroup: (index + 1) % 3 == 0,
-            isRead: isSenderCurrent ? true : null,
-            sentTime: message.sendTime,
+            isSenderCurrent: message.isSenderCurrent,
+            bubbleType: message.bubbleType,
+            isLastInGroup: message.isLastInGroup,
+            isRead: message.isRead,
+            sentTime: message.sentTime,
           ),
         );
       },
