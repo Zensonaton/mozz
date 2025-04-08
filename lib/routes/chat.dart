@@ -234,7 +234,7 @@ class ChatInput extends HookWidget {
 /// Route, отображающий отдельный чат с пользователем.
 ///
 /// go_route: `/chat/:username` ([routePath]).
-class ChatRoute extends StatelessWidget {
+class ChatRoute extends HookWidget {
   static const String routePath = "/chat/:username";
 
   /// Username пользователя, с которым открыт чат.
@@ -247,12 +247,26 @@ class ChatRoute extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = useScrollController();
+
+    useEffect(
+      () {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.jumpTo(controller.position.maxScrollExtent);
+        });
+
+        return null;
+      },
+      [],
+    );
+
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: CustomScrollView(
+                controller: controller,
                 slivers: [
                   SliverPersistentHeader(
                     pinned: true,
