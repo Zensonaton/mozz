@@ -1,9 +1,11 @@
 import "package:dio/dio.dart";
+import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 import "app.dart";
+import "firebase_options.dart";
 import "provider/dio.dart";
 import "provider/shared_preferences.dart";
 
@@ -21,6 +23,10 @@ late final Dio dio;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   final container = ProviderContainer(
     overrides: [
