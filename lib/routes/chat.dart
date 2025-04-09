@@ -9,18 +9,30 @@ import "../api/shared.dart";
 import "../provider/authorization.dart";
 import "../provider/chats.dart";
 import "../widgets/chat_avatar.dart";
+import "../widgets/history_divider.dart";
 import "../widgets/icon_button.dart";
 import "../widgets/message_bubble.dart";
 import "../widgets/svg_icon.dart";
 
+/// Базовый тип, который является аналогом для [APIMessage], который используется для отображения (рендеринга) сообщений в чате.
+///
+/// Данный класс дальше расширяется до [_Message] (обычное сообщение), либо [_HistoryDivider].
+class _MessageBase {
+  /// Дата этого сообщения.
+  final DateTime date;
+
+  _MessageBase({
+    required this.date,
+  });
+}
+
 /// Изменённая версия класса [APIMessage], которая используется для отображения сообщений в чате.
-class _Message {
+class _Message extends _MessageBase {
   final String text;
   final bool isSenderCurrent;
   BubbleType bubbleType;
   bool isLastInGroup;
   final bool? isRead;
-  final DateTime sentTime;
 
   _Message({
     required this.text,
@@ -28,7 +40,14 @@ class _Message {
     required this.bubbleType,
     required this.isLastInGroup,
     required this.isRead,
-    required this.sentTime,
+    required super.date,
+  });
+}
+
+/// Тип, который используется для отображения разделителя в истории сообщений.
+class _HistoryDivider extends _MessageBase {
+  _HistoryDivider({
+    required super.date,
   });
 }
 
@@ -130,29 +149,44 @@ class ChatMessages extends HookConsumerWidget {
     required this.username,
   });
 
-  /// Преобразовывает список из [APIMessage] в список [_Message].
-  List<_Message> _parseMessages(List<APIMessage> messages, String ownerID) {
-    final List<_Message> parsed = [];
+  /// Преобразовывает список из [APIMessage] в список [_Message] либо [_HistoryDivider].
+  List<_MessageBase> _parseMessages(List<APIMessage> messages, String ownerID) {
+    final List<_MessageBase> parsed = [];
 
     // Не забываем, что API возвращает сообщения в обратном порядке.
     // Поэтому мы проходимся по ним с конца, чтобы отобразить их в правильном порядке.
 
-    bool inGroupStart = true;
+    DateTime? lastDate;
 
     for (int i = messages.length - 1; i >= 0; i--) {
       final msg = messages[i];
+      final msgSender = msg.senderID;
+      final isCurrent = msgSender == ownerID;
+
+      final prevMsg = messages.elementAtOrNull(i + 1);
       final nextMsg = i == 0 ? null : messages.elementAtOrNull(i - 1);
+      final isFirstInGroup = prevMsg?.senderID != msgSender;
+      final isLastInGroup = nextMsg?.senderID != msgSender;
 
-      final isCurrent = msg.senderID == ownerID;
-      final isLastInGroup = nextMsg?.senderID != msg.senderID;
-      BubbleType? bubbleType;
-      bubbleType = BubbleType.connected;
+      // Разделители истории сообщений по дням.
+      lastDate ??= msg.sendTime;
+      if (msg.sendTime.day != lastDate.day) {
+        parsed.insert(
+          0,
+          _HistoryDivider(
+            date: msg.sendTime,
+          ),
+        );
+        lastDate = msg.sendTime;
+      }
 
-      if (inGroupStart) {
-        inGroupStart = false;
-        bubbleType = isLastInGroup ? BubbleType.single : BubbleType.top;
+      // Тип "пузырька" сообщения.
+      BubbleType bubbleType = BubbleType.connected;
+      if (isFirstInGroup && isLastInGroup) {
+        bubbleType = BubbleType.single;
+      } else if (isFirstInGroup) {
+        bubbleType = BubbleType.top;
       } else if (isLastInGroup) {
-        inGroupStart = true;
         bubbleType = BubbleType.bottom;
       }
 
@@ -164,7 +198,7 @@ class ChatMessages extends HookConsumerWidget {
           bubbleType: bubbleType,
           isLastInGroup: isLastInGroup,
           isRead: isCurrent ? true : null,
-          sentTime: msg.sendTime,
+          date: msg.sendTime,
         ),
       );
     }
@@ -215,6 +249,14 @@ class ChatMessages extends HookConsumerWidget {
         final invertedIndex = count - index - 1;
         final message = parsedMessages[invertedIndex];
 
+        if (message is _HistoryDivider) {
+          return HistoryDivider(
+            date: message.date,
+          );
+        } else if (message is! _Message) {
+          throw Exception("Unknown message type: ${message.runtimeType}");
+        }
+
         return Align(
           alignment: message.isSenderCurrent
               ? Alignment.centerRight
@@ -225,7 +267,7 @@ class ChatMessages extends HookConsumerWidget {
             bubbleType: message.bubbleType,
             isLastInGroup: message.isLastInGroup,
             isRead: message.isRead,
-            sentTime: message.sentTime,
+            sentTime: message.date,
           ),
         );
       },

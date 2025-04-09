@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 import "package:relative_time/relative_time.dart";
 
 import "api/shared.dart";
@@ -43,13 +44,35 @@ Future<void> showAPIExceptionDialog(
 bool isValidUsername(String username) => usernameRegex.hasMatch(username);
 
 /// Возвращает строку, репрезентирующую количество времени в виде "5 минут назад", "12.02.22".
-String formatRelativeDateTime(DateTime dateTime) {
+///
+/// Используется в отображении того, когда было отправлено последнее сообщение в чате.
+String formatDateTimePassed(DateTime dateTime) {
   return RelativeTime.locale(const Locale("ru")).format(dateTime);
 }
 
 /// Возвращает строку, отображающую время в формате "HH:mm".
+///
+/// Используется в отображении времени отправки сообщения в чате.
 String formatTime(DateTime dateTime) {
-  return "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, "0")}";
+  return DateFormat.Hm("ru").format(dateTime);
+}
+
+/// Возвращает строку, репрезентирующую то, сколько дней прошло, либо полную дату.
+///
+/// Используется для отображения "разделителей" сообщений в чате.
+String formatDate(DateTime dateTime) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+
+  if (difference.inDays == 0) {
+    return "Сегодня";
+  } else if (difference.inDays == 1) {
+    return "Вчера";
+  } else if (difference.inDays < 7) {
+    return "${difference.inDays} дн. назад";
+  }
+
+  return DateFormat.yMMMd("ru").format(dateTime);
 }
 
 /// Конвертирует переданный [timestamp] (в виде Unix timestamp) в [DateTime].

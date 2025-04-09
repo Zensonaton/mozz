@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_localizations/flutter_localizations.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 
 import "provider/router.dart";
@@ -62,6 +63,12 @@ class MainApp extends ConsumerWidget {
       ),
       themeMode: ThemeMode.light,
       routerConfig: router,
+      locale: const Locale("ru"),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }

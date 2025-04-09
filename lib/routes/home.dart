@@ -293,7 +293,7 @@ class ChatList extends HookConsumerWidget {
           isSenderCurrent: lastMessage.senderID == ownerID,
           sentTimeText: useMinimizedLayout
               ? null
-              : formatRelativeDateTime(lastMessage.sendTime),
+              : formatDateTimePassed(lastMessage.sendTime),
           onTap: () => onChatTap(user.username),
         );
       },
