@@ -61,18 +61,25 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
                       ),
                     ),
                     const Gap(4),
-                    TextFormField(
-                      controller: controller,
-                      decoration: const InputDecoration(
-                        hintText: "Поиск",
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.only(
-                            left: 12,
-                            right: 6,
+                    SizedBox(
+                      height: 48,
+                      child: TextField(
+                        controller: controller,
+                        decoration: const InputDecoration(
+                          hintText: "Поиск",
+                          prefixIconConstraints: BoxConstraints(
+                            maxWidth: 42,
+                            maxHeight: 24,
                           ),
-                          child: SvgIcon(
-                            name: "search",
-                            color: Color(0xFF9DB7CB),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.only(
+                              left: 12,
+                              right: 6,
+                            ),
+                            child: SvgIcon(
+                              name: "search",
+                              color: Color(0xFF9DB7CB),
+                            ),
                           ),
                         ),
                       ),
