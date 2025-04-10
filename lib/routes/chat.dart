@@ -324,13 +324,16 @@ class ChatInput extends HookWidget {
             onPressed: onAttachTap,
           ),
           Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                hintText: "Сообщение",
+            child: SizedBox(
+              height: 48,
+              child: TextField(
+                controller: controller,
+                decoration: const InputDecoration(
+                  hintText: "Сообщение",
+                ),
+                minLines: 1,
+                maxLines: 5,
               ),
-              minLines: 1,
-              maxLines: 5,
             ),
           ),
           CustomIconButton(
