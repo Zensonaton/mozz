@@ -107,7 +107,7 @@ class ChatsUpdater {
     );
 
     // Если чат не существует, то добавляем его.
-    if (!chats.any((chat) => chat.id == update.dialog)) {
+    if (chats == null || !chats.any((chat) => chat.id == update.dialog)) {
       chatsNotifier.updateChat(
         APIChatResponse(
           id: update.dialog,

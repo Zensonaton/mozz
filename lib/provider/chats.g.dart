@@ -6,7 +6,7 @@ part of 'chats.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chatHash() => r'0ea5c1afc12913255bd256f8dab6ff6693c398f0';
+String _$chatHash() => r'abeeefbe9e51a28f7366a073142ec218e3683701';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -166,13 +166,13 @@ class _ChatProviderElement extends AutoDisposeProviderElement<APIChatResponse?>
   String get username => (origin as ChatProvider).username;
 }
 
-String _$chatsHash() => r'25c7cd5a0951481566409c43698998f890b8b9ca';
+String _$chatsHash() => r'54b083cc3eaf724c337e2b50de90a44ce69479e4';
 
 /// [Provider], предоставляющий доступ к списку всех чатов текущего пользователя.
 ///
 /// Copied from [Chats].
 @ProviderFor(Chats)
-final chatsProvider = NotifierProvider<Chats, List<APIChatResponse>>.internal(
+final chatsProvider = NotifierProvider<Chats, List<APIChatResponse>?>.internal(
   Chats.new,
   name: r'chatsProvider',
   debugGetCreateSourceHash:
@@ -181,6 +181,6 @@ final chatsProvider = NotifierProvider<Chats, List<APIChatResponse>>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef _$Chats = Notifier<List<APIChatResponse>>;
+typedef _$Chats = Notifier<List<APIChatResponse>?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

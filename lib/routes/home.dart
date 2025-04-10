@@ -241,6 +241,24 @@ class ChatList extends HookConsumerWidget {
 
     final useMinimizedLayout = MediaQuery.sizeOf(context).width < 250;
 
+    // Если список чатов ещё не был загружен.
+    if (chats == null) {
+      return SliverList.separated(
+        itemCount: 10,
+        separatorBuilder: (BuildContext context, int index) {
+          return const Divider(
+            indent: 20,
+            endIndent: 20,
+          );
+        },
+        itemBuilder: (BuildContext context, int index) {
+          return Skeletonizer(
+            child: ChatDialog.fake(),
+          );
+        },
+      );
+    }
+
     final hasSearchItem = isLoading.value || foundUser.value != null;
     final chatItemsCount = chats.length + (hasSearchItem ? 1 : 0);
 
@@ -251,6 +269,12 @@ class ChatList extends HookConsumerWidget {
 
     return SliverList.separated(
       itemCount: chatItemsCount,
+      separatorBuilder: (BuildContext context, int index) {
+        return const Divider(
+          indent: 20,
+          endIndent: 20,
+        );
+      },
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
           // Производится поиск, отображаем skeleton loader.
@@ -295,12 +319,6 @@ class ChatList extends HookConsumerWidget {
               ? null
               : formatDateTimePassed(lastMessage.sendTime),
           onTap: () => onChatTap(user.username),
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return const Divider(
-          indent: 20,
-          endIndent: 20,
         );
       },
     );
