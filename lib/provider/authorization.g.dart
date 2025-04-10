@@ -6,7 +6,7 @@ part of 'authorization.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authorizationHash() => r'd92e5877c8de16b55ed3ea6e70447b3fab8d52e5';
+String _$authorizationHash() => r'7d558c6270753a93f76782442a8382664ead7a66';
 
 /// [Provider] для хранения состояния авторизации пользователя. Позволяет авторизовывать и деавторизовывать пользователя.
 ///

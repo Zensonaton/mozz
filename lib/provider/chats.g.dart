@@ -166,7 +166,7 @@ class _ChatProviderElement extends AutoDisposeProviderElement<APIChatResponse?>
   String get username => (origin as ChatProvider).username;
 }
 
-String _$chatsHash() => r'83ecad8e4ede89cf6597b7362ee2febe138f79a7';
+String _$chatsHash() => r'a4efcb7489f008b0d53531681b288874fa7a7d84';
 
 /// [Provider], предоставляющий доступ к списку всех чатов текущего пользователя.
 ///

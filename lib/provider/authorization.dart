@@ -1,6 +1,7 @@
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../api/shared.dart";
+import "chats_updater.dart";
 import "shared_preferences.dart";
 
 part "authorization.g.dart";
@@ -50,6 +51,8 @@ class Authorization extends _$Authorization {
     if (id != null && username != null && token != null) {
       state = User(id: id, username: username, token: token);
 
+      ref.read(chatsUpdaterProvider).start(token);
+
       return state;
     }
 
@@ -58,6 +61,7 @@ class Authorization extends _$Authorization {
 
   /// {@template Authorization.login}
   /// Авторизовывает пользователя, который ранее смог успешно авторизоваться по логину и паролю (API [authLogin]), либо зарегистрировался (API [authRegister]), получив access-токен.
+  /// После данного вызова, так же запускается [ChatsUpdater], который обновляет сообщения в фоне.
   /// {@endtemplate}
   Future<void> login(String id, String username, String token) async {
     final prefs = ref.read(sharedPrefsProvider);
@@ -66,6 +70,8 @@ class Authorization extends _$Authorization {
     await prefs.setString("Token", token);
 
     state = User(id: id, username: username, token: token);
+
+    ref.read(chatsUpdaterProvider).start(token);
   }
 
   /// Аналог метода [login], но принимает в качестве параметра [SuccessLoginResponse] - ответ от API, который содержит в себе данные для авторизации.
@@ -85,5 +91,7 @@ class Authorization extends _$Authorization {
     await prefs.clear();
 
     state = null;
+
+    ref.read(chatsUpdaterProvider).stop();
   }
 }

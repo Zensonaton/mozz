@@ -85,6 +85,20 @@ class APIMessage {
     required this.sendTime,
   });
 
+  APIMessage copyWith({
+    int? id,
+    String? senderID,
+    String? text,
+    DateTime? sendTime,
+  }) {
+    return APIMessage(
+      id: id ?? this.id,
+      senderID: senderID ?? this.senderID,
+      text: text ?? this.text,
+      sendTime: sendTime ?? this.sendTime,
+    );
+  }
+
   factory APIMessage.fromJson(Map<String, dynamic> json) =>
       _$APIMessageFromJson(json);
 
@@ -113,6 +127,19 @@ class APIChatResponse {
     required this.messages,
     required this.creationTime,
   });
+
+  APIChatResponse copyWith({
+    List<APIUserResponse>? users,
+    List<APIMessage>? messages,
+    int? creationTime,
+  }) {
+    return APIChatResponse(
+      id: id,
+      users: users ?? this.users,
+      messages: messages ?? this.messages,
+      creationTime: creationTime ?? this.creationTime,
+    );
+  }
 
   factory APIChatResponse.fromJson(Map<String, dynamic> json) =>
       _$APIChatResponseFromJson(json);

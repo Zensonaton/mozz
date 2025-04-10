@@ -22,18 +22,67 @@ class Chats extends _$Chats {
     state = response.dialogs;
   }
 
-  /// Добавляет новый чат в список чатов текущего пользователя.
-  void addChat(APIChatResponse chat) {
-    state = [chat, ...state];
+  /// Добавляет чат [chat] в список уже существующих чатов. Если чат уже существует, то информация будет обновлена.
+  void updateChat(APIChatResponse chat) {
+    final index = state.indexWhere(
+      (c) => c.id == chat.id,
+    );
+
+    // Чат не найден, просто добавляем его.
+    if (index == -1) {
+      state = [chat, ...state];
+
+      return;
+    }
+
+    final oldChat = state[index];
+    List<APIMessage> messages = [...oldChat.messages];
+
+    for (final message in chat.messages) {
+      if (messages.any((m) => m.id == message.id)) continue;
+
+      messages.insert(0, message);
+    }
+
+    final newChat = oldChat.copyWith(
+      users: chat.users,
+      creationTime: chat.creationTime,
+      messages: messages,
+    );
+
+    state = [
+      ...state.sublist(0, index),
+      newChat,
+      ...state.sublist(index + 1),
+    ];
   }
 
-  /// Удаляет чат из списка чатов текущего пользователя.
-  void removeChat(APIChatResponse chat) {
-    state = state
-        .where(
-          (c) => c.id != chat.id,
-        )
-        .toList();
+  /// Добавляет сообщение [APIMessage] (либо обновляет) в чат с ID [chatId].
+  void updateMessage(String chatId, APIMessage message) {
+    final index = state.indexWhere(
+      (c) => c.id == chatId,
+    );
+
+    if (index == -1) return;
+
+    final chat = state[index];
+    final messages = [...chat.messages];
+
+    final messageIndex = messages.indexWhere(
+      (m) => m.id == message.id,
+    );
+
+    if (messageIndex == -1) {
+      messages.insert(0, message);
+    } else {
+      messages[messageIndex] = message;
+    }
+
+    state = [
+      ...state.sublist(0, index),
+      chat.copyWith(messages: messages),
+      ...state.sublist(index + 1),
+    ];
   }
 }
 
