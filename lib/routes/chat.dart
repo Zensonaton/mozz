@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:gap/gap.dart";
 import "package:go_router/go_router.dart";
@@ -352,7 +353,7 @@ class ChatInput extends HookWidget {
 /// Route, отображающий отдельный чат с пользователем.
 ///
 /// go_route: `/chat/:username` ([routePath]).
-class ChatRoute extends HookWidget {
+class ChatRoute extends HookConsumerWidget {
   static const String routePath = "/chat/:username";
 
   /// Username пользователя, с которым открыт чат.
@@ -364,7 +365,9 @@ class ChatRoute extends HookWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chat = ref.watch(chatProvider(username));
+
     final controller = useScrollController();
 
     useEffect(
@@ -376,6 +379,28 @@ class ChatRoute extends HookWidget {
         return null;
       },
       [],
+    );
+
+    useEffect(
+      () {
+        if (chat == null) return null;
+        if (!controller.hasClients) return null;
+        if (controller.position.pixels != controller.position.maxScrollExtent) {
+          return null;
+        }
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.animateTo(
+            controller.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.easeInOut,
+          );
+        });
+        HapticFeedback.vibrate();
+
+        return null;
+      },
+      [chat?.messages],
     );
 
     return Scaffold(
