@@ -316,6 +316,7 @@ class ChatInput extends HookWidget {
       ),
       child: Row(
         spacing: 6,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomIconButton(
             icon: const SvgIcon(
@@ -325,15 +326,16 @@ class ChatInput extends HookWidget {
             onPressed: onAttachTap,
           ),
           Expanded(
-            child: SizedBox(
-              height: 48,
-              child: TextField(
-                controller: controller,
-                decoration: const InputDecoration(
-                  hintText: "Сообщение",
+            child: TextField(
+              controller: controller,
+              minLines: 1,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: "Сообщение",
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
                 ),
-                minLines: 1,
-                maxLines: 5,
               ),
             ),
           ),
