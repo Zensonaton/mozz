@@ -117,27 +117,20 @@ class APIChatResponse {
   /// Список из сообщений этого чата.
   final List<APIMessage> messages;
 
-  /// Время создания чата в Unix timestamp.
-  @JsonKey(name: "creation-time")
-  final int creationTime;
-
   APIChatResponse({
     required this.id,
     required this.users,
     required this.messages,
-    required this.creationTime,
   });
 
   APIChatResponse copyWith({
     List<APIUserResponse>? users,
     List<APIMessage>? messages,
-    int? creationTime,
   }) {
     return APIChatResponse(
       id: id,
       users: users ?? this.users,
       messages: messages ?? this.messages,
-      creationTime: creationTime ?? this.creationTime,
     );
   }
 

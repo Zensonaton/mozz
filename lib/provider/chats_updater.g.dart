@@ -10,6 +10,9 @@ NewMessageUpdate _$NewMessageUpdateFromJson(Map<String, dynamic> json) =>
     NewMessageUpdate(
       id: (json['id'] as num).toInt(),
       dialog: json['dialog'] as String,
+      users: (json['dialog_users'] as List<dynamic>)
+          .map((e) => APIUserResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
       text: json['text'] as String,
       timestamp: dateTimefromUnix((json['timestamp'] as num).toInt()),
       sender: json['sender'] as String,
@@ -20,6 +23,7 @@ Map<String, dynamic> _$NewMessageUpdateToJson(NewMessageUpdate instance) =>
     <String, dynamic>{
       'id': instance.id,
       'dialog': instance.dialog,
+      'dialog_users': instance.users,
       'text': instance.text,
       'timestamp': dateTimeToUnix(instance.timestamp),
       'sender': instance.sender,

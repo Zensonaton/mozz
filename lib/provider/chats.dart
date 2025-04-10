@@ -46,7 +46,6 @@ class Chats extends _$Chats {
 
     final newChat = oldChat.copyWith(
       users: chat.users,
-      creationTime: chat.creationTime,
       messages: messages,
     );
 

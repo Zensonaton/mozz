@@ -62,7 +62,6 @@ APIChatResponse _$APIChatResponseFromJson(Map<String, dynamic> json) =>
       messages: (json['messages'] as List<dynamic>)
           .map((e) => APIMessage.fromJson(e as Map<String, dynamic>))
           .toList(),
-      creationTime: (json['creation-time'] as num).toInt(),
     );
 
 Map<String, dynamic> _$APIChatResponseToJson(APIChatResponse instance) =>
@@ -70,5 +69,4 @@ Map<String, dynamic> _$APIChatResponseToJson(APIChatResponse instance) =>
       'id': instance.id,
       'users': instance.users,
       'messages': instance.messages,
-      'creation-time': instance.creationTime,
     };

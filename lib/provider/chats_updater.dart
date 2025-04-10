@@ -97,15 +97,29 @@ class ChatsUpdater {
   void onNewMessage(NewMessageUpdate update) {
     print("New message: ${update.text}");
 
-    ref.read(chatsProvider.notifier).updateMessage(
-          update.dialog,
-          APIMessage(
-            id: update.id,
-            senderID: update.sender,
-            text: update.text,
-            sendTime: update.timestamp,
-          ),
-        );
+    final chats = ref.read(chatsProvider);
+    final chatsNotifier = ref.read(chatsProvider.notifier);
+    final message = APIMessage(
+      id: update.id,
+      senderID: update.sender,
+      text: update.text,
+      sendTime: update.timestamp,
+    );
+
+    // Если чат не существует, то добавляем его.
+    if (!chats.any((chat) => chat.id == update.dialog)) {
+      chatsNotifier.updateChat(
+        APIChatResponse(
+          id: update.dialog,
+          users: update.users,
+          messages: [message],
+        ),
+      );
+
+      return;
+    }
+
+    chatsNotifier.updateMessage(update.dialog, message);
   }
 }
 
@@ -117,6 +131,10 @@ class NewMessageUpdate {
 
   /// ID диалога, в котором было отправлено сообщение.
   final String dialog;
+
+  /// Список из пользователей этого диалога.
+  @JsonKey(name: "dialog_users")
+  final List<APIUserResponse> users;
 
   /// Содержимое сообщения.
   final String text;
@@ -135,6 +153,7 @@ class NewMessageUpdate {
   NewMessageUpdate({
     required this.id,
     required this.dialog,
+    required this.users,
     required this.text,
     required this.timestamp,
     required this.sender,
